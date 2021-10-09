@@ -26,7 +26,7 @@ func InitApi(server string, port int) *API {
 }
 
 func (api *API) GetSpecs() string {
-	res, err := api.client.Get(api.server + strconv.Itoa(api.port) + "/spec")
+	res, err := api.client.Get(api.server + ":" + strconv.Itoa(api.port) + "/spec")
 
 	if err != nil {
 		log.Fatal(err)
