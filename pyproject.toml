@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "web-of-web-trust-backend"
+version = "0.1.0"
+description = "the backend for the web of web trust protoype as part of jugendhackt 2021"
+authors = ["Cobalt <https://cobalt.rocks>"]
+license = "AGPL-3-only"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.70.0"
+typer = "^0.4.0"
+
+[tool.poetry.dev-dependencies]
+black = "^21.9b0"
+pylint = "^2.11.1"
+mypy = "^0.910"
+uvicorn = "^0.15.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
