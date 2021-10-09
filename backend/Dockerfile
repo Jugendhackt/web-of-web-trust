@@ -1,9 +1,13 @@
 FROM python:3.10.0-slim-buster
 
-COPY . /opt/app
+COPY . /opt/app/
 
 WORKDIR /opt/app/
 
-RUN apt update && apt install -yqq build-essential libffi-dev gcc && python3 -m pip install poetry && poetry install
+RUN apt update -yqq && apt install -yqq build-essential git postgresql-client postgresql-client-common postgresql libffi-dev gcc && python3 -m pip install -r requirements.txt 
 
-CMD ["poetry", "run" "python3", "manage.py"]
+EXPOSE 8080
+
+ENV PORT=8080
+
+CMD ["bash", "docker.sh"]
