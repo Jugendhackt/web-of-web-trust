@@ -25,19 +25,19 @@ class Domain(db.Model):
         links = db.func.count(Link.parent_id)
         print(db.scalar(db.exists().where(Link.parent_id == self.id).select()))
         print(db.scalar(db.exists().where(Link.child_id == self.id).select()))
-        print(
-            db.select(
-                [
-                    Domain.name,
-                    links,
-                ]
-            )
-            .select_from(Domain.outerjoin(Link.child_id))
-            .group_by(
-                *Domain,
-            )
-            .gino.load((Domain, ColumnLoader(links)))
-        )
+        #print(
+        #    db.select(
+        #        [
+        #            Domain.name,
+        #            links,
+        #        ]
+        #    )
+        #    .select_from(Domain.outerjoin(Link.child_id))
+        #    .group_by(
+        #        *Domain,
+        #    )
+        #    .gino.load((Domain, ColumnLoader(links)))
+        #)
 
         return (0, 0)
 

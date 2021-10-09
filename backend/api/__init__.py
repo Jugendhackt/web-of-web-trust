@@ -50,10 +50,12 @@ async def fetch_domains(
                 "score": (1, 1),  # domain.score(),
                 "last_updated": domain.last_updated,
             }
-            for domain in await Domain.select(Domain.id, Domain.name)
-            .filter(Domain.name.startswith(domains))
-            .limit(100)
-            .offset(page * 100)
+            for domain in await Domain.select('id', 'fqdn', 'last_updated')
+            .where(Domain.fqdn.startswith(domains))
+            #.limit(100)
+            #.offset(page * 100)
+            #.all()
+            .gino
             .all()
         ]
     }
