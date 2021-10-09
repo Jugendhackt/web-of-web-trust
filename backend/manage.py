@@ -8,9 +8,9 @@ app = typer.Typer()
 def up():
     """Start development uvicorn server"""
     typer.echo(f"Starting backend")
-    from api import app
+    from api import api
 
-    uvicorn.run(app)
+    uvicorn.run("api:api", debug=True, reload=True)
 
 
 if __name__ == "__main__":
