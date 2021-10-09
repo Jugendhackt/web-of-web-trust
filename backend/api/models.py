@@ -10,6 +10,16 @@ class InsertRequest(BaseModel):
     last_updated: int
 
 
+class RuegenUpdateRequest(BaseModel):
+    """Request for updating or creating a new ruege"""
+
+    medium: str
+    aktenzeichen: str
+    title: str
+    ziffer: str
+    year: int
+
+
 class DomainReponse(BaseModel):
     """Information about domain including evaluated scores"""
 

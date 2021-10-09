@@ -18,7 +18,7 @@ class Domain(db.Model):
     last_updated = db.Column(db.Integer(), nullable=False)
 
     @staticmethod
-    def hash_name(name: str) -> str:
+    def hash_name(name: bytes) -> str:
         return sha1(name)
 
     def score(self) -> (int, int):
@@ -60,9 +60,12 @@ class Link(db.Model):
 class Ruege(db.Model):
     __tablename__ = "ruegen"
 
-    id = db.Column(db.BigInteger(), primary_key=True)
-
-    aktenzeichen = db.Column(db.String(), unique=True, nullable=False)
+    # Aktenzeichen – Might be used for indexing instead of having a hashed value
+    identifier = db.Column(db.String(), unique=True, nullable=False, primary_key=True)
     titel = db.Column(db.String(), nullable=False)
+    # Description for ruege that might be requested by extension
     description = db.Column(db.String(), nullable=False)
+    # Year of ruege
     year = db.Column(db.Integer(), nullable=False)
+    # Associated domain
+    domain = db.Column(db.BigInteger(), db.ForeignKey("domains.id"), nullable=False)
