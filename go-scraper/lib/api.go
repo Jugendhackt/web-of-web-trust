@@ -2,7 +2,10 @@
 package goscraper_lib
 
 import (
+	"io"
+	"log"
 	"net/http"
+	"strconv"
 )
 
 // API struct holds all necessary information
@@ -20,4 +23,21 @@ func InitApi(server string, port int) *API {
 		client: http.DefaultClient,
 	}
 	return &api
+}
+
+func (api *API) GetSpecs() string {
+	res, err := api.client.Get(api.server + strconv.Itoa(api.port) + "/spec")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer res.Body.Close()
+
+	b, err := io.ReadAll(res.Body)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return string(b)
 }
