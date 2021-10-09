@@ -4,7 +4,7 @@ import (
 	"github.com/gocolly/colly"
 )
 
-func scraper(seedURL string) []string {
+func Scraper(seedURL string) []string {
 	// Instantiate default collector
 	c := colly.NewCollector(
 		// MaxDepth is 1, so only the links on the scraped page
