@@ -16,11 +16,16 @@ for section in main.find_all('section'):
     year = div1.text.strip()
     txt = html_text.extract_text(str(div2))
     for line in txt.splitlines():
-        print(line)
         if "(" in line:
             medium, line = line.split('(', 1)
             az, line = re.split("[,\)]", line, 1)
             if '"' in line or "'" in line:
-                temp, line = re.split('[\'"]', line, 1)
+                line = line.lstrip(": ")
+                title,line = line.split (",",1)
+            else:
+                title = ""
+            line = line.lstrip (", ")
+            iffer = line.split(",") [0]
+            #temp, line = re.split('[\'"]', line, 1)
                 #titel, line = re.split('[\'"]', line, 1)
-            print(line)
+            print(medium,az,title,iffer)
