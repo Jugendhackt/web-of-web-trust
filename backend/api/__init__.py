@@ -1,8 +1,9 @@
 from typing import Optional
-
+from gino import Gino
 from fastapi import FastAPI
 
 app = FastAPI()
+db = Gino()
 
 
 @app.get("/")
