@@ -7,10 +7,13 @@ app = typer.Typer()
 @app.command()
 def up():
     """Start development uvicorn server"""
-    typer.echo(f"Starting backend")
-    from api import api
+    from api.db.config import API_DEBUG, API_HOST, API_RELOAD, API_DEBUG, API_PORT
 
-    uvicorn.run("api:api", debug=True, reload=True)
+    typer.echo(f"Starting backend")
+
+    uvicorn.run(
+        "api:api", host=API_HOST, port=API_PORT, debug=API_DEBUG, reload=API_RELOAD
+    )
 
 
 if __name__ == "__main__":

@@ -78,9 +78,8 @@ async def insert_domain(domain: InsertRequest):
         parent = (
             await db.select([Domain.id])
             .where(Domain.fqdn == data["domain"])
-            .limit(1)
-            .gino.all()
-        )[0][0]
+            .gino.first()
+        ).id
     except Exception as e:
         parent = (
             await Domain.create(
