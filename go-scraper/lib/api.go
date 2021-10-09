@@ -74,7 +74,7 @@ func (api *API) PostUpdate(domain string, links []string, network bool, updated 
 	if err != nil {
 		log.Fatal(err)
 	}
-	res, err := api.client.Post(api.server+":"+strconv.Itoa(api.port), "application/json", bytes.NewBuffer(js))
+	res, err := api.client.Post(api.server+":"+strconv.Itoa(api.port)+"/update", "application/json", bytes.NewBuffer(js))
 
 	if err != nil {
 		log.Fatal(err)
