@@ -25,6 +25,7 @@ func InitApi(server string, port int) *API {
 	return &api
 }
 
+// GetSpecs runs the /specs api call with a GET request
 func (api *API) GetSpecs() string {
 	res, err := api.client.Get(api.server + ":" + strconv.Itoa(api.port) + "/spec")
 
