@@ -2,6 +2,7 @@
 package goscraper_lib
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -73,20 +74,18 @@ func (api *API) PostUpdate(domain string, links []string, network bool, updated 
 	if err != nil {
 		log.Fatal(err)
 	}
-	/*
-		res, err := api.client.Post(api.server+":"+strconv.Itoa(api.port), "application/json", bytes.NewBuffer(js))
+	res, err := api.client.Post(api.server+":"+strconv.Itoa(api.port), "application/json", bytes.NewBuffer(js))
 
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer res.Body.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer res.Body.Close()
 
-		b, err := io.ReadAll(res.Body)
+	b, err := io.ReadAll(res.Body)
 
-		if err != nil {
-			log.Fatal(err)
-		}
-	*/
+	if err != nil {
+		log.Fatal(err)
+	}
 	fmt.Println(string(js))
-	return ""
+	return string(b)
 }
