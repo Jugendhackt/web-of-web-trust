@@ -13,11 +13,9 @@ class Domain(db.Model):
     # Fully Qualified Domain Name
     fqdn = db.Column(db.String(), unique=True, index=True, nullable=False)
     # Hash
-    hash = db.Column(db.String(40))
+    fqdn_hash = db.Column(db.String(120))
     # Last updated field
     last_updated = db.Column(db.Integer(), nullable=False)
-    # network
-    network = db.Column(db.Boolean())
 
     @staticmethod
     def hash_name(name: str) -> str:
@@ -25,8 +23,8 @@ class Domain(db.Model):
 
     def score(self) -> (int, int):
         links = db.func.count(Link.parent_id)
-        db.scalar(db.exists().where(User.email == email).select())
-        db.scalar(db.exists().where(User.email == email).select())
+        print(db.scalar(db.exists().where(Link.parent_id == self.id).select()))
+        print(db.scalar(db.exists().where(Link.child_id == self.id).select()))
         print(
             db.select(
                 [

@@ -1,4 +1,6 @@
 from typing import Optional, Any, Dict, List, Union
+from math import floor
+from time import time
 from gino import Gino
 from .models import InsertRequest, DomainReponse, AggregatedDomainResponse
 from .db.init import db
@@ -71,16 +73,43 @@ async def test():
     name="Scraper Interface",
 )
 async def insert_domain(domain: InsertRequest):
-    print(domain)
     data = jsonable_encoder(domain)
+    try:
+        parent = (
+            await db.select([Domain.id])
+            .where(Domain.fqdn == data["domain"])
+            .limit(1)
+            .gino.all()
+        )[0][0]
+    except Exception as e:
+        parent = (
+            await Domain.create(
+                fqdn=data["domain"],
+                fqdn_hash=Domain.hash_name(data["domain"].encode()).__str__(),
+                last_updated=floor(time()),
+            )
+        ).id
 
-        
-    d = await Domain.create(
-        fqdn=data["domain"],
-        hash=Domain.hash_name(data["domain"]),
-        last_updated=data["last_updated"],
-    )
+    for link in domain.links:
+        try:
+            id = (
+                await db.select([Domain.id])
+                .where(Domain.fqdn == link)
+                .limit(1)
+                .gino.all()
+            )[0][0]
+        except Exception as e:
+            id = (
+                await Domain.create(
+                    fqdn=link,
+                    fqdn_hash=Domain.hash_name(link.encode()).__str__(),
+                    last_updated=floor(time()),
+                )
+            ).id
 
-    print(d)
+        if not await db.scalar(
+            db.exists().where(Link.parent_id == parent and Link.child_id == id).select()
+        ):
+            await Link.create(network=data["network"], parent_id=parent, child_id=id)
 
     return Response(status_code=201)

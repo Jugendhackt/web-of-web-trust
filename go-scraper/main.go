@@ -1,14 +1,11 @@
 package main
 
 import (
-	"log"
-
 	scrab "go-scraper/lib"
 )
 
 func main() {
-	links := scrab.Scraper("https://www.wikipedia.de")
-	for link := range links {
-		log.Println(links[link])
-	}
+	api := scrab.InitApi("localhost", 8080)
+	links := []string{"faz.net", "ard.de"}
+	api.PostUpdate("bild.de", links, false, 1337)
 }
