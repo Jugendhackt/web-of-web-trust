@@ -7,8 +7,6 @@ class InsertRequest(BaseModel):
 
     domain: str
     links: List[str]
-    # True = 
-    network: bool
     last_updated: int
 
 
