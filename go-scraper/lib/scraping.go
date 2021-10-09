@@ -12,7 +12,7 @@ func Scraper(seedURL string) []string {
 		colly.MaxDepth(1),
 	)
 
-	links := make([]string, 1024)
+	links := []string{}
 
 	// On every a element which has href attribute call callback
 	c.OnHTML("a[href]", func(e *colly.HTMLElement) {
