@@ -17,3 +17,5 @@ class Edge(db.Model):
     __tablename__ = "edges"
 
     t = Column(Boolean())
+
+class 

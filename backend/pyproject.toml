@@ -9,9 +9,11 @@ license = "AGPL-3-only"
 python = "^3.9"
 fastapi = "^0.70.0"
 typer = "^0.4.0"
-gino = "^1.0.1"
+gino-starlette = { git = "https://github.com/Chaostheorie/gino-starlette.git" }
+psycopg2-binary = "^2.9.1"
 
 [tool.poetry.dev-dependencies]
+alembic = "^1.7.4"
 black = "^21.9b0"
 pylint = "^2.11.1"
 mypy = "^0.910"
