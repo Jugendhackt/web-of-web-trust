@@ -1,0 +1,8 @@
+# ignore idea stuff
+.idea/
+
+# ignore vscode stuff
+.vscode/
+
+# ignore build folder
+build/
