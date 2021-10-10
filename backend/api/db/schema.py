@@ -23,10 +23,11 @@ class Domain(db.Model):
     def hash_name(name: bytes) -> str:
         return sha1(name).hexdigest().__str__()
 
-    def score(self) -> Tuple[int, int]:
+    @staticmethod
+    def score(id: int) -> Tuple[int, int]:
         links = db.func.count(Link.parent_id)
-        print(db.scalar(db.exists().where(Link.parent_id == self.id).select()))
-        print(db.scalar(db.exists().where(Link.child_id == self.id).select()))
+        print(db.scalar(db.exists().where(Link.parent_id == id).select()))
+        print(db.scalar(db.exists().where(Link.child_id == id).select()))
         print(
             db.select(
                 [

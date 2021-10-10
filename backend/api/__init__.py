@@ -1,4 +1,4 @@
-from typing import Optional, Any, Dict, List, Union
+from typing import Optional, Any, Dict, List, Union, Tuple
 from math import floor
 from random import randint
 from time import time
@@ -91,7 +91,7 @@ async def fetch_domains(
         1,
         alias="p",
         title="Page for pagination",
-        description="When over a hundred domans are found for a request you need to specify a page to get more results.",
+        description="When over a hundred domains are found for a request you need to specify a page to get more results.",
     ),
 ):
     print(domains)
@@ -104,6 +104,13 @@ async def fetch_domains(
         page -= 1
 
     # Not efficient but okay
+
+    def _score(fqdn: str) -> Tuple[int, int]:
+        if fqdn == "www.bild.de":
+            return (-10, 20)
+        else:
+            return (randint(-10, 10), randint(-10, 10))
+
     return {
         "domains": [
             {
@@ -130,7 +137,54 @@ async def db_dump():
     return {
         "domains": [
             {"fqdn": domain[0], "hash": domain[1]}
-            for domain in await db.select([Domain.fqdn, Domain.fqdn_hash]).gino.all()
+            for domain in await db.select([Domain.fqdn, Domain.fqdn_hash])
+            .limit(1000)
+            .gino.all()
+        ]
+    }
+
+
+@api.get(
+    "/test/",
+    summary="Interface for clients (internal testing - do not touch",
+    description="Route for requesting domains with scores by a hash prefix",
+    status_code=200,
+)
+async def test(
+    domains: Optional[str] = Query(
+        None,
+        min_length=4,
+        max_length=40,
+        title="Domain Hash Prefix",
+        description="Prefix for domain hashes that should be retrieved",
+    ),
+    page: Optional[int] = Query(
+        1,
+        alias="p",
+        title="Page for pagination",
+        description="When over a hundred domains are found for a request you need to specify a page to get more results.",
+    ),
+):
+    if domains is None:
+        return HTTPException(status_code=400, detail="Missing domains parameter")
+
+    if page is None:
+        page = 0
+    else:
+        page -= 1
+
+    return {
+        "domains": [
+            {
+                "fqdn": domain[1],
+                "score": Domain.score(domain[2]),  # domain.score(),
+                "last_updated": domain[0],
+            }
+            for domain in await db.select([Domain.last_updated, Domain.fqdn, Domain.id])
+            .where(Domain.fqdn_hash.startswith(domains))
+            .limit(100)
+            .offset(page * 100)
+            .gino.all()
         ]
     }
 
