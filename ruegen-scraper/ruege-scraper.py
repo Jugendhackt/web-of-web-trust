@@ -68,3 +68,7 @@ class RuegenCollector:
                     line = line.lstrip(", ")
                     iffer = line.split(",")[0]
                     self.push(medium.strip(), aktenzeichen, title, iffer, year)
+
+if __name__ == "__main__":
+    r = RuegenCollector()
+    r.getruegen()
