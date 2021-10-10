@@ -1,5 +1,6 @@
 from typing import Optional, Any, Dict, List, Union
 from math import floor
+from random import randint
 from time import time
 from gino import Gino
 from .models import (
@@ -7,6 +8,7 @@ from .models import (
     DomainReponse,
     AggregatedDomainResponse,
     RuegenUpdateRequest,
+    DomainDumpResponse,
 )
 from .db import db
 from .db.schema import Domain, Link, Ruege
@@ -106,7 +108,7 @@ async def fetch_domains(
         "domains": [
             {
                 "fqdn": domain[1],
-                "score": (1, 1),  # domain.score(),
+                "score": (randint(-10, 10), randint(-10, 10)),  # domain.score(),
                 "last_updated": domain[0],
             }
             for domain in await db.select([Domain.last_updated, Domain.fqdn])
@@ -118,7 +120,11 @@ async def fetch_domains(
     }
 
 
-@api.get("/db-dump/", include_in_schema=False)
+@api.get(
+    "/db-dump/",
+    summary="List all (domain, hash) duplets from the database sorted by id",
+    response_model=DomainDumpResponse,
+)
 async def db_dump():
 
     return {

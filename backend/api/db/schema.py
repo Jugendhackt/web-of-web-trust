@@ -2,6 +2,7 @@ from api.db import db
 from hashlib import sha1
 from gino.loader import ColumnLoader
 from typing import Tuple
+from random import randint
 
 
 class Domain(db.Model):
@@ -20,7 +21,7 @@ class Domain(db.Model):
 
     @staticmethod
     def hash_name(name: bytes) -> str:
-        return sha1(name).hexdigest()
+        return sha1(name).hexdigest().__str__()
 
     def score(self) -> Tuple[int, int]:
         links = db.func.count(Link.parent_id)
@@ -40,7 +41,7 @@ class Domain(db.Model):
             .gino.load((Domain, ColumnLoader(links)))
         )
 
-        return (0, 0)
+        return (randint(-10, 10), randint(-10, 10))
 
 
 class Link(db.Model):
