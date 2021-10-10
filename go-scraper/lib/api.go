@@ -4,7 +4,6 @@ package goscraper_lib
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -18,12 +17,8 @@ type API struct {
 	client *http.Client
 }
 
-// this structs are responsible for the update JSON send to the API
+// this struct is responsible for the update JSON send to the API
 type updateJSON struct {
-	Domain updateJSONnested `json:"domain"`
-}
-
-type updateJSONnested struct {
 	Domain  string   `json:"domain"`
 	Links   []string `json:"links"`
 	Network bool     `json:"network"`
@@ -61,12 +56,10 @@ func (api *API) GetSpecs() string {
 // PostUpdate runs the /update api call with a POST request
 func (api *API) PostUpdate(domain string, links []string, network bool, updated int) string {
 	str := updateJSON{
-		updateJSONnested{
-			Domain:  domain,
-			Links:   links,
-			Network: network,
-			Updated: updated,
-		},
+		Domain:  domain,
+		Links:   links,
+		Network: network,
+		Updated: updated,
 	}
 
 	js, err := json.Marshal(str)
@@ -74,7 +67,7 @@ func (api *API) PostUpdate(domain string, links []string, network bool, updated 
 	if err != nil {
 		log.Fatal(err)
 	}
-	res, err := api.client.Post(api.server+":"+strconv.Itoa(api.port)+"/update", "application/json", bytes.NewBuffer(js))
+	res, err := api.client.Post(api.server+":"+strconv.Itoa(api.port)+"/update/", "application/json", bytes.NewBuffer(js))
 
 	if err != nil {
 		log.Fatal(err)
@@ -86,6 +79,5 @@ func (api *API) PostUpdate(domain string, links []string, network bool, updated 
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(string(js))
 	return string(b)
 }
