@@ -1,0 +1,14 @@
+{
+    "api":{
+        "server":"localhost",
+        "port":8080
+    },
+    "netgood":[
+        "faz.net",
+        "tagesschau.de",
+        "bbc.com"
+    ],
+    "netbad":[
+        "bild.de"
+    ]
+}
