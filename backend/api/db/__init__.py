@@ -1,4 +1,3 @@
-from api.db.init import db
 from hashlib import sha1
 from gino.loader import ColumnLoader
 from typing import Tuple
