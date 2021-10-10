@@ -29,4 +29,5 @@ class Ruege:
         return x
 
 
-#print(Ruege("spiegel").ruege())
+if __name__ == "__main__":
+    print(Ruege("spiegel").ruege())
