@@ -71,17 +71,16 @@ async def update_ruege(ruege: RuegenUpdateRequest):
     return Response(status_code=201)
 
 
-@api.post(
+@api.get(
     "/domain/",
-    response_model=AggregatedDomainResponse,
     summary="Interface for clients",
     description="Route for requesting domains with scores by a hash prefix",
     status_code=200,
 )
 async def fetch_domains(
-    domains: str = Query(
-        "",
-        min_length=5,
+    domains: Optional[str] = Query(
+        None,
+        min_length=4,
         max_length=40,
         title="Domain Hash Prefix",
         description="Prefix for doman hashes that should be retrieved",
@@ -93,33 +92,41 @@ async def fetch_domains(
         description="When over a hundred domans are found for a request you need to specify a page to get more results.",
     ),
 ):
-    if domains == "":
-        return HTTPException(status_code=400, detail="Missing domain parameter")
+    print(domains)
+    if domains is None:
+        return HTTPException(status_code=400, detail="Missing domains parameter")
 
     if page is None:
-        page = 1
+        page = 0
+    else:
+        page -= 1
 
     # Not efficient but okay
     return {
         "domains": [
             {
-                "fqdn": domain.fqdn,
+                "fqdn": domain[1],
                 "score": (1, 1),  # domain.score(),
-                "last_updated": domain.last_updated,
+                "last_updated": domain[0],
             }
-            for domain in await Domain.select(Domain.id, Domain.fqdn)
-            .where(Domain.fqdn.startswith(domains))
+            for domain in await db.select([Domain.last_updated, Domain.fqdn])
+            .where(Domain.fqdn_hash.startswith(domains))
             .limit(100)
             .offset(page * 100)
-            .all()
+            .gino.all()
         ]
     }
 
 
-@api.get("/test/")
-async def test():
+@api.get("/db-dump/", include_in_schema=False)
+async def db_dump():
 
-    return {"domains": []}
+    return {
+        "domains": [
+            {"fqdn": domain[0], "hash": domain[1]}
+            for domain in await db.select([Domain.fqdn, Domain.fqdn_hash]).gino.all()
+        ]
+    }
 
 
 @api.post(
