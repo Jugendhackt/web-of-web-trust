@@ -1,5 +1,5 @@
 from logging.config import fileConfig
-from api.db.init import db
+from api.db import db
 from api.db.config import DB_DSN
 from sqlalchemy import pool, engine_from_config
 from alembic import context
