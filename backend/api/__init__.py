@@ -8,7 +8,8 @@ from .models import (
     AggregatedDomainResponse,
     RuegenUpdateRequest,
 )
-from .db import Domain, Link, Ruege, db
+from .db import db
+from .db.schema import Domain, Link, Ruege
 from fastapi import FastAPI, Query, HTTPException, Response, Body
 from fastapi.encoders import jsonable_encoder
 
@@ -32,29 +33,40 @@ async def openapi_spec() -> Dict[str, Any]:
     description="Interface used by ruegen scraper on instance startup to feed updates and/ or new ruegen to the database",
 )
 async def update_ruege(ruege: RuegenUpdateRequest):
-    # TODO:
-    # - Define a mapping method for medium -> domain
-    # -
-
     data = jsonable_encoder(ruege)
 
     try:
-        db_ruege = Ruege.get(data["aktenzeichen"])
-    except Exception as e:
+        db_ruege = await Ruege.query.where(
+            Ruege.identifier == data["aktenzeichen"]
+        ).gino.first()
+        domain_id = db_ruege.domain
+    except:
+        try:
+            domain_id = (
+                await db.select([Domain.id])
+                .where(Domain.fqdn == data["medium"])
+                .gino.first()
+            )[0]
+        except:
+            domain_id = (
+                await Domain.create(
+                    fqdn=data["medium"],
+                    fqdn_hash=Domain.hash_name(data["medium"].encode()),
+                    last_updated=floor(time()),
+                )
+            ).id
+
         db_ruege = await Ruege.create(
-            Indentifier=data["aktenzeichen"],
+            identifier=data["aktenzeichen"],
             year=data["year"],
             title=data["title"],
             ziffer=data["ziffer"],
+            domain=domain_id,
         )
 
-    changes = {}
-    for key in data.keys():
-        if db_ruege.__getattribute__(key) != data[key]:
-            changes[key] = data[key]
-
-    # TODO: Finish with changes
-    db_ruege.update().values()
+    await db_ruege.update(
+        title=data["title"], ziffer=data["ziffer"], year=data["year"], domain=domain_id
+    ).apply()
 
     return Response(status_code=201)
 

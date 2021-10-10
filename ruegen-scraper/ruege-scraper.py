@@ -70,4 +70,5 @@ class RuegenCollector:
                     self.push(medium.strip(), aktenzeichen, title, iffer, year)
 
 if __name__ == "__main__":
-    RuegenCollector().getruegen()
+    r = RuegenCollector()
+    r.getruegen()
