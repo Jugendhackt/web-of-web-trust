@@ -1,6 +1,20 @@
 from api.db.init import db
 from hashlib import sha1
 from gino.loader import ColumnLoader
+from typing import Tuple
+from gino.ext.starlette import Gino
+from api.db.config import *
+
+db = Gino(
+    dsn=DB_DSN,
+    pool_min_size=DB_POOL_MIN_SIZE,
+    pool_max_size=DB_POOL_MAX_SIZE,
+    echo=DB_ECHO,
+    ssl=DB_SSL,
+    use_connection_for_request=DB_USE_CONNECTION_FOR_REQUEST,
+    retry_limit=DB_RETRY_LIMIT,
+    retry_interval=DB_RETRY_INTERVAL,
+)
 
 
 class Domain(db.Model):
@@ -19,9 +33,9 @@ class Domain(db.Model):
 
     @staticmethod
     def hash_name(name: bytes) -> str:
-        return sha1(name)
+        return sha1(name).hexdigest()
 
-    def score(self) -> (int, int):
+    def score(self) -> Tuple[int, int]:
         links = db.func.count(Link.parent_id)
         print(db.scalar(db.exists().where(Link.parent_id == self.id).select()))
         print(db.scalar(db.exists().where(Link.child_id == self.id).select()))

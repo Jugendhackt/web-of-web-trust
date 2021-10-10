@@ -24,7 +24,7 @@ class DomainReponse(BaseModel):
     """Information about domain including evaluated scores"""
 
     fqdn: str
-    score: Tuple[int]
+    score: Tuple[int, int]
     last_updated: int
 
 

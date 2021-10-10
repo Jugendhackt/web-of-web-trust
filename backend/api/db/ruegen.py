@@ -1,7 +1,6 @@
 # ruegen
 # By Melly
 
-import requests
 from bs4 import BeautifulSoup
 import html_text
 from requests import get, post

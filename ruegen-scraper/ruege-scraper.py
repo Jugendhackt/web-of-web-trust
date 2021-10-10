@@ -49,9 +49,13 @@ class RuegenCollector:
         main = BeautifulSoup(page.text, "html.parser").find("main")
 
         for section in main.find_all("section"):
-            div1, div2 = section.find_all("div", recursive=False)
-            year = int(div1.text.strip())
-            txt = html_text.extract_text(str(div2))
+            # divs are seperated with year being on the left and the content on the right
+            year_div, content_div = section.find_all("div", recursive=False)
+            year = int(year_div.text.strip())
+
+            # extract text from content div
+            txt = html_text.extract_text(str(content_div))
+
             for line in txt.splitlines():
                 if "(" in line:
                     medium, line = line.split("(", 1)

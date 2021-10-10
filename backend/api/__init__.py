@@ -96,8 +96,8 @@ async def fetch_domains(
                 "score": (1, 1),  # domain.score(),
                 "last_updated": domain.last_updated,
             }
-            for domain in await Domain.select(Domain.id, Domain.name)
-            .filter(Domain.name.startswith(domains))
+            for domain in await Domain.select(Domain.id, Domain.fqdn)
+            .where(Domain.fqdn.startswith(domains))
             .limit(100)
             .offset(page * 100)
             .all()
@@ -130,7 +130,7 @@ async def insert_domain(domain: InsertRequest):
         parent = (
             await Domain.create(
                 fqdn=data["domain"],
-                fqdn_hash=Domain.hash_name(data["domain"].encode()).__str__(),
+                fqdn_hash=Domain.hash_name(data["domain"].encode()),
                 last_updated=floor(time()),
             )
         ).id
@@ -144,7 +144,7 @@ async def insert_domain(domain: InsertRequest):
             id = (
                 await Domain.create(
                     fqdn=link,
-                    fqdn_hash=Domain.hash_name(link.encode()).__str__(),
+                    fqdn_hash=Domain.hash_name(link.encode()),
                     last_updated=floor(time()),
                 )
             ).id
