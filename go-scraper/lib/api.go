@@ -22,7 +22,7 @@ type updateJSON struct {
 	Domain  string   `json:"domain"`
 	Links   []string `json:"links"`
 	Network bool     `json:"network"`
-	Updated int      `json:"last_updated"`
+	Updated int64    `json:"last_updated"`
 }
 
 // InitAPI initialises and returns a new API struct
@@ -54,7 +54,7 @@ func (api *API) GetSpecs() string {
 }
 
 // PostUpdate runs the /update api call with a POST request
-func (api *API) PostUpdate(domain string, links []string, network bool, updated int) string {
+func (api *API) PostUpdate(domain string, links []string, network bool, updated int64) string {
 	str := updateJSON{
 		Domain:  domain,
 		Links:   links,
@@ -62,6 +62,11 @@ func (api *API) PostUpdate(domain string, links []string, network bool, updated 
 		Updated: updated,
 	}
 
+	if len(links) > 100 {
+		str.Links = links[:99]
+		log.Println("Called")
+		go api.PostUpdate(domain, links[99:], network, updated)
+	}
 	js, err := json.Marshal(str)
 
 	if err != nil {
@@ -72,6 +77,7 @@ func (api *API) PostUpdate(domain string, links []string, network bool, updated 
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	defer res.Body.Close()
 
 	b, err := io.ReadAll(res.Body)
