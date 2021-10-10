@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"net/url"
+	"os/exec"
 
 	scrab "go-scraper/lib"
 )
@@ -34,13 +36,46 @@ func main() {
 
 	api := scrab.InitApi(confjs.APIconf.Server, confjs.APIconf.Port)
 
-	for _, url := range confjs.Netgood {
-		links := scrab.Scraper(url)
-		api.PostUpdate(url, links, true, 0)
+	for _, raw := range confjs.Netgood {
+		links := scrab.Scraper(raw)
+
+		parsedlinks := []string{}
+		parsedurl, err := url.Parse(raw)
+		if err != nil {
+			log.Fatal(err)
+		}
+		domain := parsedurl.Host
+
+		for _, unp := range links {
+			pr, err := url.Parse(unp)
+			if err != nil {
+				log.Fatal(err)
+			}
+			parsedlinks = append(parsedlinks, pr.Host)
+		}
+
+		api.PostUpdate(domain, parsedlinks, true, 0)
 	}
 
-	for _, url := range confjs.Netbad {
-		links := scrab.Scraper(url)
-		api.PostUpdate(url, links, false, 0)
+	for _, raw := range confjs.Netbad {
+		links := scrab.Scraper(raw)
+
+		parsedlinks := []string{}
+		parsedurl, err := url.Parse(raw)
+		if err != nil {
+			log.Fatal(err)
+		}
+		domain := parsedurl.Host
+
+		for _, unp := range links {
+			pr, err := url.Parse(unp)
+			if err != nil {
+				log.Fatal(err)
+			}
+			parsedlinks = append(parsedlinks, pr.Host)
+		}
+		api.PostUpdate(domain, parsedlinks, false, 0)
 	}
+
+	exec.Command("python ../ruegen-scraper/ruege-scraper.py")
 }

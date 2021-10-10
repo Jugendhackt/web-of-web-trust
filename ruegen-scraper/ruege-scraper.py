@@ -15,7 +15,7 @@ class RuegenCollector:
 
     def __init__(self):
         host = getenv("API_HOST") or "0.0.0.0"
-        port = getenv("API_PORT") or 8000
+        port = getenv("API_PORT") or 8080
         path = getenv("API_RUEGEN_PATH") or "/ruegen/update/"
         ssl = getenv("API_SSL") or False
 
