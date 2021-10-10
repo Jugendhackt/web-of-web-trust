@@ -8,8 +8,7 @@ from .models import (
     AggregatedDomainResponse,
     RuegenUpdateRequest,
 )
-from .db.init import db
-from .db import Domain, Link, Ruege
+from .db import Domain, Link, Ruege, db
 from fastapi import FastAPI, Query, HTTPException, Response, Body
 from fastapi.encoders import jsonable_encoder
 
