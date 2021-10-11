@@ -11,19 +11,16 @@ services:
     links:
       - db
     environment:
-      - API_DEBUG=True
-      - API_RELOAD=True
       - DB_USER=test-api
       - DB_HOST=db
       - DB_DATABASE=test-api
       - DB_PASSWORD=test-api
       - DB_PORT=5432
       - DB_DRIVER=postgresql
-      - API_RELOAD=true
+      - API_RELOAD=True
       - API_HOST=0.0.0.0
       - API_PORT=8080
-      - API_DEBUG=true
-      - DB_SSL=true
+      - API_DEBUG=True
   db:
     image: "postgres:13"
     environment:
