@@ -1,6 +1,5 @@
 from gino.ext.starlette import Gino
 from api.db.config import *
-
 db = Gino(
     dsn=DB_DSN,
     pool_min_size=DB_POOL_MIN_SIZE,

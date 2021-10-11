@@ -1,4 +1,5 @@
 from api.db import db
+from api.db.config import API_SSL
 from api.domains.routes import domain_router
 from api.ruegen.routes import ruegen_router
 from api.utility.routes import utility_router
@@ -17,6 +18,7 @@ api = FastAPI(
         "name": "AGPL 3.0 (only)",
         "url": "https://www.gnu.org/licenses/agpl-3.0.txt",
     },
+    sslmode=API_SSL,
 )
 db.init_app(api)
 api.include_router(domain_router)

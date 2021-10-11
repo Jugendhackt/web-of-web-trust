@@ -13,6 +13,7 @@ gino-starlette = { git = "https://github.com/Chaostheorie/gino-starlette.git" }
 psycopg2-binary = "^2.9.1"
 pydantic = "^1.8.2"
 async-cache = "^1.1.1"
+gunicorn = "^20.1.0"
 
 [tool.poetry.dev-dependencies]
 alembic = "^1.7.4"
