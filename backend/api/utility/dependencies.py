@@ -1,5 +1,6 @@
-from typing import Optional
 from fastapi import Query
+from pydantic import BaseModel
+from typing import Optional
 
 
 page_description = """
@@ -13,6 +14,14 @@ How many items should be returned per page
 
 > `page x per_page = number of items`
 """
+
+
+class PaginationParameter(BaseModel):
+    """Container for data in pagination query parameters"""
+
+    page: int
+    per_page: int
+    offset: int
 
 
 async def pagination(
@@ -31,5 +40,5 @@ async def pagination(
         le=100,
         title="Items per page",
     ),
-):
-    return dict(page=page, per_page=per_page, offset=page * per_page)  # type: ignore
+) -> PaginationParameter:
+    return PaginationParameter(page=page, per_page=per_page, offset=page * per_page)

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "web-of-web-trust-backend"
-version = "0.1.0"
+version = "0.1.1b0"
 description = "the backend for the web of web trust protoype as part of jugendhackt 2021"
 authors = ["Cobalt <https://cobalt.rocks>"]
 license = "AGPL-3-only"
@@ -12,6 +12,7 @@ typer = "^0.4.0"
 gino-starlette = { git = "https://github.com/Chaostheorie/gino-starlette.git" }
 psycopg2-binary = "^2.9.1"
 pydantic = "^1.8.2"
+async-cache = "^1.1.1"
 
 [tool.poetry.dev-dependencies]
 alembic = "^1.7.4"

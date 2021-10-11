@@ -55,6 +55,14 @@ typing-extensions = {version = ">=3.10", markers = "python_version < \"3.10\""}
 wrapt = ">=1.11,<1.13"
 
 [[package]]
+name = "async-cache"
+version = "1.1.1"
+description = "An asyncio Cache"
+category = "main"
+optional = false
+python-versions = ">=3.3"
+
+[[package]]
 name = "asyncpg"
 version = "0.24.0"
 description = "An asyncio PostgreSQL driver"
@@ -507,7 +515,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "14e9da148dc9abd77b928125218d922c039cf8c9c6e033019bb3c0109cba1318"
+content-hash = "ac174f96deec580a8fba93b50e54b2a3d5022b73d0d69a7e529a515827f3d492"
 
 [metadata.files]
 alembic = [
@@ -525,6 +533,9 @@ asgiref = [
 astroid = [
     {file = "astroid-2.8.2-py3-none-any.whl", hash = "sha256:9eaeaf92b3e21b70bec1a262e7eb118d2e96294892a5de595c92a12adc80dfc2"},
     {file = "astroid-2.8.2.tar.gz", hash = "sha256:304e99c129794f2cfda584a12b71fde85205da950e2f330f4be09150525ae949"},
+]
+async-cache = [
+    {file = "async-cache-1.1.1.tar.gz", hash = "sha256:81aa9ccd19fb06784aaf30bd5f2043dc0a23fc3e998b93d0c2c17d1af9803393"},
 ]
 asyncpg = [
     {file = "asyncpg-0.24.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:c4fc0205fe4ddd5aeb3dfdc0f7bafd43411181e1f5650189608e5971cceacff1"},

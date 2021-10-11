@@ -7,7 +7,7 @@ from fastapi import FastAPI
 api = FastAPI(
     title="web-of-web-trust-backend",
     description="The web of web trust backend. Making the web a bit more assessable ⚖️",
-    version="0.0.1b0",
+    version="0.1.1b0",
     contact={
         "name": "Cobalt",
         "url": "http://cobalt.rocks/",
