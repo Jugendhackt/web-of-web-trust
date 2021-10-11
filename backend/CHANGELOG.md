@@ -8,3 +8,4 @@
 - Add simple caching for domain fetching and fqdn hashing
 - Added base for new ruegen interface (fetching not working yet)
 - Fixed hacks in domain fetching with `GINO`
+- Fix docker(-compose) integration
