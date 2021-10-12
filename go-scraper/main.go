@@ -5,8 +5,13 @@ import (
 	"io/ioutil"
 	"log"
 	"net/url"
+<<<<<<< HEAD
 	"os/exec"
 	"time"
+=======
+	"os"
+	"strconv"
+>>>>>>> 01bafe1c32474bade574136b606b130904e90428
 
 	scrab "go-scraper/lib"
 )
@@ -33,6 +38,25 @@ func main() {
 	err = json.Unmarshal(conf, &confjs)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	// Check environment for config
+	envHost, envHostOK := os.LookupEnv("API_HOST")
+
+	if envHostOK {
+		confjs.APIconf.Server = envHost
+	}
+
+	envPort, envPortOk := os.LookupEnv("API_PORT")
+
+	if envPortOk {
+		port, err := strconv.Atoi(envPort)
+
+		if err != nil {
+			log.Fatal(err)
+		} else {
+			confjs.APIconf.Port = port
+		}
 	}
 
 	api := scrab.InitApi(confjs.APIconf.Server, confjs.APIconf.Port)

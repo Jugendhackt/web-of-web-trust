@@ -1,16 +1,24 @@
-FROM python:3.9.0-slim
+FROM python:3.9-alpine as base
 
-COPY . /opt/app/
+FROM base as builder
 
-WORKDIR /opt/app/
+RUN apk add --no-cache gcc git musl-dev libffi-dev openssl-dev make postgresql-dev
 
-RUN apt update -qqy && \
-    apt install -qqy build-essential git postgresql-client postgresql-client-common postgresql libffi-dev gcc && \
-    python3 -m pip install poetry && \
-    python3 -m pip install -r requirements.txt
+RUN pip install poetry
 
-EXPOSE 8080
+ADD . /src/
 
-ENV PORT=8080
+WORKDIR /src
 
-CMD ["bash", "-c", "'python3 -m alembic upgrade head && python3 manage.py'"]
+RUN python -m venv /env && . /env/bin/activate && poetry install
+
+FROM base
+
+RUN apk add --no-cache postgresql-libs
+
+COPY --from=builder /env /env
+COPY --from=builder /src /src
+
+WORKDIR /src
+
+CMD ["sh", "docker.sh"]

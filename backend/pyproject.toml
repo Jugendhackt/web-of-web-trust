@@ -1,29 +1,30 @@
 [tool.poetry]
-name = "web-of-web-trust-backend"
-version = "0.1.0"
-description = "the backend for the web of web trust protoype as part of jugendhackt 2021"
 authors = ["Cobalt <https://cobalt.rocks>"]
+description = "the backend for the web of web trust protoype as part of jugendhackt 2021"
 license = "AGPL-3-only"
+name = "web-of-web-trust-backend"
+version = "0.1.1b0"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+async-cache = "^1.1.1"
 fastapi = "^0.70.0"
-typer = "^0.4.0"
 gino-starlette = { git = "https://github.com/Chaostheorie/gino-starlette.git" }
 psycopg2-binary = "^2.9.1"
 pydantic = "^1.8.2"
+python = "^3.9"
+typer = "^0.4.0"
 
 [tool.poetry.dev-dependencies]
 alembic = "^1.7.4"
 black = "^21.9b0"
-pylint = "^2.11.1"
+email-validator = "^1.1.3"
+gunicorn = "^20.1.0"
 mypy = "^0.910"
-uvicorn = "^0.15.0"
+pylint = "^2.11.1"
 rope = "^0.20.1"
-types-requests = "^2.25.9"
-types-beautifulsoup4 = "^4.10.1"
 sqlalchemy-stubs = "^0.4"
+uvicorn = "^0.15.0"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0"]
