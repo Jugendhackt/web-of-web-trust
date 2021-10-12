@@ -40,14 +40,14 @@ func (api *API) GetSpecs() string {
 	res, err := api.client.Get(api.server + ":" + strconv.Itoa(api.port) + "/spec")
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	defer res.Body.Close()
 
 	b, err := io.ReadAll(res.Body)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	return string(b)
@@ -64,18 +64,18 @@ func (api *API) PostUpdate(domain string, links []string, network bool, updated 
 
 	if len(links) > 100 {
 		str.Links = links[:99]
-		log.Println("Called")
+		log.Println("Called\r")
 		go api.PostUpdate(domain, links[99:], network, updated)
 	}
 	js, err := json.Marshal(str)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	res, err := api.client.Post(api.server+":"+strconv.Itoa(api.port)+"/update/", "application/json", bytes.NewBuffer(js))
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	defer res.Body.Close()
@@ -83,7 +83,7 @@ func (api *API) PostUpdate(domain string, links []string, network bool, updated 
 	b, err := io.ReadAll(res.Body)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	return string(b)
 }

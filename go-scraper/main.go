@@ -38,49 +38,51 @@ func main() {
 	api := scrab.InitApi(confjs.APIconf.Server, confjs.APIconf.Port)
 
 	for {
-		log.Println("WHILE")
-		for _, raw := range confjs.Netgood {
-			links := scrab.Scraper(raw)
+		go func() {
+			log.Println("WHILE\r")
+			for _, raw := range confjs.Netgood {
+				links := scrab.Scraper(raw)
 
-			parsedlinks := []string{}
-			parsedurl, err := url.Parse(raw)
-			if err != nil {
-				log.Fatal(err)
-			}
-			domain := parsedurl.Host
-
-			for _, unp := range links {
-				pr, err := url.Parse(unp)
+				parsedlinks := []string{}
+				parsedurl, err := url.Parse(raw)
 				if err != nil {
 					log.Fatal(err)
 				}
-				parsedlinks = append(parsedlinks, pr.Host)
+				domain := parsedurl.Host
+
+				for _, unp := range links {
+					pr, err := url.Parse(unp)
+					if err != nil {
+						log.Fatal(err)
+					}
+					parsedlinks = append(parsedlinks, pr.Host)
+				}
+
+				api.PostUpdate(domain, parsedlinks, true, time.Now().Unix())
+				time.Sleep(time.Millisecond / 2)
 			}
 
-			api.PostUpdate(domain, parsedlinks, true, time.Now().Unix())
-			time.Sleep(time.Millisecond)
-		}
+			for _, raw := range confjs.Netbad {
+				links := scrab.Scraper(raw)
 
-		for _, raw := range confjs.Netbad {
-			links := scrab.Scraper(raw)
-
-			parsedlinks := []string{}
-			parsedurl, err := url.Parse(raw)
-			if err != nil {
-				log.Fatal(err)
-			}
-			domain := parsedurl.Host
-
-			for _, unp := range links {
-				pr, err := url.Parse(unp)
+				parsedlinks := []string{}
+				parsedurl, err := url.Parse(raw)
 				if err != nil {
 					log.Fatal(err)
 				}
-				parsedlinks = append(parsedlinks, pr.Host)
+				domain := parsedurl.Host
+
+				for _, unp := range links {
+					pr, err := url.Parse(unp)
+					if err != nil {
+						log.Fatal(err)
+					}
+					parsedlinks = append(parsedlinks, pr.Host)
+				}
+				api.PostUpdate(domain, parsedlinks, false, time.Now().Unix())
+				time.Sleep(time.Millisecond / 2)
 			}
-			api.PostUpdate(domain, parsedlinks, false, time.Now().Unix())
-			time.Sleep(time.Millisecond)
-		}
+		}()
 
 		exec.Command("python ../ruegen-scraper/ruege-scraper.py")
 		time.Sleep(time.Millisecond)
