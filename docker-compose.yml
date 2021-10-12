@@ -1,13 +1,13 @@
 version: "3.3"
 
 services:
-  web:
-    build: .
+  backend:
+    build: ./backend/
     restart: always
     ports:
       - "8080:8080"
     volumes:
-      - .:/opt/app
+      - ./backend/:/src/
     links:
       - db
     environment:
@@ -27,3 +27,13 @@ services:
       - POSTGRES_PASSWORD=test-api
       - POSTGRES_USER=test-api
       - POSTGRES_DB=test-api
+  go-scraper:
+    build: ./go-scraper
+    restart: always
+    volumes:
+      - ./go-scraper/:/app
+    links:
+      - backend
+    environment:
+      - API_PORT=8080
+      - API_HOST=http://backend

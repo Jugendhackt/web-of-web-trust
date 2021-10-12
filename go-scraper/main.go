@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/url"
 	"os/exec"
+	"os"
+	"strconv"
 
 	scrab "go-scraper/lib"
 )
@@ -32,6 +34,25 @@ func main() {
 	err = json.Unmarshal(conf, &confjs)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	// Check environment for config
+	envHost, envHostOK := os.LookupEnv("API_HOST")
+
+	if envHostOK {
+		confjs.APIconf.Server = envHost
+	}
+
+	envPort, envPortOk := os.LookupEnv("API_PORT")
+
+	if envPortOk {
+		port, err := strconv.Atoi(envPort)
+
+		if err != nil {
+			log.Fatal(err)
+		} else {
+			confjs.APIconf.Port = port
+		}
 	}
 
 	api := scrab.InitApi(confjs.APIconf.Server, confjs.APIconf.Port)
@@ -76,6 +97,4 @@ func main() {
 		}
 		api.PostUpdate(domain, parsedlinks, false, 0)
 	}
-
-	exec.Command("python ../ruegen-scraper/ruege-scraper.py")
 }
