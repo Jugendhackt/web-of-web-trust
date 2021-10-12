@@ -5,13 +5,10 @@ import (
 	"io/ioutil"
 	"log"
 	"net/url"
-<<<<<<< HEAD
-	"os/exec"
-	"time"
-=======
 	"os"
+	"os/exec"
 	"strconv"
->>>>>>> 01bafe1c32474bade574136b606b130904e90428
+	"time"
 
 	scrab "go-scraper/lib"
 )
