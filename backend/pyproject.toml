@@ -23,8 +23,6 @@ mypy = "^0.910"
 pylint = "^2.11.1"
 rope = "^0.20.1"
 sqlalchemy-stubs = "^0.4"
-types-beautifulsoup4 = "^4.10.1"
-types-requests = "^2.25.9"
 uvicorn = "^0.15.0"
 
 [build-system]

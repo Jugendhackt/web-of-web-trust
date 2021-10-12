@@ -6,7 +6,6 @@ WORKDIR /app
 
 COPY go.mod ./
 COPY go.sum ./
-COPY config.json /
 
 RUN go mod download
 
@@ -20,6 +19,6 @@ FROM alpine:latest
 WORKDIR /
 
 COPY --from=build /docker-scraper /docker-scraper
-COPY --from=build /app/config.json /config.json
+COPY config.json /config.json
 
 ENTRYPOINT ["./docker-scraper"]

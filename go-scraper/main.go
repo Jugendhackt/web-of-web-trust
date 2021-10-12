@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/url"
-	"os/exec"
 	"os"
 	"strconv"
 

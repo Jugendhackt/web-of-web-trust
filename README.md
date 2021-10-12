@@ -1,51 +1,18 @@
-# Web of Web Trust - Server
+# Web of Web Trust - Backend
 
-The server for the web of web trust project
+The server and scrapers for the web of web trust project
 
 ## Requirements
 
 ```text
-golang
-python3
-```
-
-optional
-
-```text
 docker
+docker-compose
 ```
 
 ## Installation
 
-The Installation instructions for the server
-
-### ruegen-scraper
+All projects are supposed to be run with docker-compose. ATM only the ruegen scraper is missing but that will be resolved in the near duture.
 
 ```bash
-cd ruegen-scraper
-pip3 install -r requirements.txt
-```
-
-### go-scraper
-
-```bash
-cd go-scraper
-go install
-```
-
-Please execute the binary only in the go-scraper directory.
-
-### backend
-
-```bash
-cd backend
-pip install -r requirements.txt
-python manage.py
-```
-
-or with docker
-
-```bash
-cd backend
 docker-compose up
 ```
