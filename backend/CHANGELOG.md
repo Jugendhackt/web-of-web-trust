@@ -1,11 +1,18 @@
-# 0.1.1b0 (WIP)
+# 0.1.1 (WIP)
 
 > Will be published once API is fully implemented
 
-- Change OpenAPI spec 
-- Removed useless route `/spec`. Please use the built-in `/docs` or `redoc` instead
-- Fixed domain fetching and score
-- Add simple caching for domain fetching and fqdn hashing
-- Added base for new ruegen interface (fetching not working yet)
-- Fixed hacks in domain fetching with `GINO`
-- Fix docker(-compose) integration
+- Removed useless route `/spec`. (Use the built-in `/docs` instead)
+- [ ] Caching with redis and/ or memchached (see)
+- [ ] Overhaul interfaces
+    - [ ] Ruegen interface
+    - [ ] Domain interface
+- [ ] Test interfaces
+    - [ ] Ruegen interface
+    - [ ] Domain interface
+- [x] Change hashing method to [Blake 3](https://pypi.org/project/blake3/#description) for faster hashing
+- [ ] Docker-Compose for all components
+     - [x] Backend (WIP)
+     - [x] GO Scraper
+     - [ ] Ruegen Scraper
+- 

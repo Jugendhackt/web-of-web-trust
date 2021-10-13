@@ -10,6 +10,7 @@ services:
       - ./backend/:/src/
     links:
       - db
+      - redis
     environment:
       - DB_USER=test-api
       - DB_HOST=db
@@ -22,11 +23,13 @@ services:
       - API_PORT=8080
       - API_DEBUG=True
   db:
-    image: "postgres:13"
+    image: postgres:13
     environment:
       - POSTGRES_PASSWORD=test-api
       - POSTGRES_USER=test-api
       - POSTGRES_DB=test-api
+  redis:
+    image: redis:latest
   go-scraper:
     build: ./go-scraper
     restart: always

@@ -1,5 +1,5 @@
 from api.db import db
-from api.db.schema import Domain, Link
+from api.db.schema import Domain, Link, count_ruegen_query
 from api.domains.models import (
     AggregatedDomainResponse,
     DomainDumpResponse,
@@ -36,7 +36,7 @@ async def fetch_domains(
                 fqdn=domain[1],
                 score=await Domain.score(domain[2]),
                 last_updated=domain[0],
-                ruegen_amount=await Domain.count_ruegen(domain[2]),
+                ruegen_amount=await count_ruegen_query.scalar(id=domain[2]),
             )
             for domain in await db.select([Domain.last_updated, Domain.fqdn, Domain.id])
             .where(Domain.fqdn_hash.startswith(domains))

@@ -43,43 +43,44 @@ async def test(
 async def update_ruege(ruege: RuegenUpdateRequest):
     data = jsonable_encoder(ruege)
 
-    db_ruege = await Ruege.query.where(
-        Ruege.identifier == data["identifier"]
-    ).gino.first()
+    db_ruege = await Ruege.get(data["identifier"])
 
     if db_ruege is None:
         medium = (
-            await db.select([Domain.id])
+            await db.select([Domain.fqdn_hash])
             .where(Domain.fqdn == data["medium"])
             .gino.first()
         )
 
+        print(data)
+
         if medium is None:
-            domain_id = (
-                await Domain.create(
-                    fqdn=data["medium"],
-                    fqdn_hash=Domain.hash_name(data["medium"]),
-                    last_updated=floor(time()),
-                )
-            ).id
+            domain = await Domain.create(
+                fqdn=data["medium"],
+                fqdn_hash=Domain.hash_name(data["medium"]),
+                last_updated=floor(time()),
+            )
+            domain_hash = domain.fqdn_hash
         else:
-            domain_id = medium[0]
+            domain_hash = medium[0]
+
+        print(domain_hash)
 
         db_ruege = await Ruege.create(
             identifier=data["identifier"],
             year=data["year"],
             title=data["title"],
             ziffer=data["ziffer"],
-            domain_id=domain_id,
+            domain_hash=domain_hash,
         )
     else:
-        domain_id = db_ruege.domain
+        domain_hash = db_ruege.domain_hash
 
     await db_ruege.update(
         title=data["title"],
         ziffer=data["ziffer"],
         year=data["year"],
-        domain_id=domain_id,
+        domain_hash=domain_hash,
     ).apply()
 
     return Response(status_code=201)

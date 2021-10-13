@@ -3,8 +3,7 @@ from api.utility.dependencies import PaginationParameter
 from api.ruegen.models import RuegeModel
 from cache import AsyncTTL
 from gino.loader import ColumnLoader
-from hashlib import sha1
-from random import randint
+from blake3 import blake3
 from typing import Tuple, List, Dict
 
 
@@ -18,44 +17,26 @@ class Domain(db.Model):
     # Fully Qualified Domain Name
     fqdn = db.Column(db.String(), unique=True, index=True, nullable=False)
     # Hash
-    fqdn_hash = db.Column(db.String(120), unique=True, nullable=False)
+    fqdn_hash = db.Column(db.String(32), unique=True, nullable=False)
     # Last updated field
     last_updated = db.Column(db.Integer(), nullable=False)
 
     @staticmethod
     @AsyncTTL(time_to_live=30, maxsize=1024)
     def hash_name(name: str) -> str:
-        return sha1(name.encode(encoding="utf-8")).hexdigest().__str__()
-
-    @staticmethod
-    @AsyncTTL(time_to_live=300, maxsize=1024)
-    async def count_ruegen(id: int) -> int:
-        return (
-            await db.select([db.func.count()]).where(Ruege.domain == id).gino.scalar()
-        )
+        return blake3(name.encode(encoding="utf-8")).hexdigest(length=32)
 
     @staticmethod
     @AsyncTTL(time_to_live=60, maxsize=1024)
     async def score(id: int) -> tuple[int, int]:
         """Calculate score"""
-        # This is not efficient
-        positive = (
-            await db.select([db.func.count()])
-            .where(Link.parent_id == id and Link.network == True)
-            .gino.scalar()
-            - await db.select([db.func.count()])
-            .where(Link.child_id == id and Link.network == True)
-            .gino.scalar()
-        )
+        positive = await count_children_query(
+            network=True, id=id
+        ) - await count_children_query.scalar(network=True, id=id)
 
-        negative = (
-            await db.select([db.func.count()])
-            .where(Link.parent_id == id and Link.network == False)
-            .gino.scalar()
-            - await db.select([db.func.count()])
-            .where(Link.child_id == id and Link.network == False)
-            .gino.scalar()
-        )
+        negative = await count_parents_query(
+            network=False, id=id
+        ) - await count_children_query.scalar(network=False, id=id)
 
         return (positive, negative)
 
@@ -86,35 +67,59 @@ class Ruege(db.Model):
     # Year of ruege
     year = db.Column(db.Integer(), nullable=False)
     # Associated domain
-    domain_id = db.Column(
-        db.String(120), db.ForeignKey("domains.fqdn_hash"), nullable=False
+    domain_hash = db.Column(
+        db.String(120), db.ForeignKey("domains.fqdn_hash"), nullable=False, index=True
     )
     # Ziffer
     ziffer = db.Column(db.String(), nullable=False)
 
     @staticmethod
-    @AsyncTTL(time_to_live=60, maxsize=1024)
+    #  @AsyncTTL(time_to_live=60, maxsize=1024)
     async def by_hash(
         fqdn_hash: str, pagination: PaginationParameter
-    ): #-> List[Dict[str, RuegeModel]]:
+    ) -> List[RuegeModel]:
         print(
-            await db.select([Ruege.identifier, Ruege.title, Ruege.year, Ruege.ziffer])
-            .where(Ruege.domain.startswith(fqdn_hash))
-            .group_by(Ruege.domain)
-            .limit(pagination.per_page)
-            .offset(pagination.offset)
-            .gino.all()
+            await paginated_ruege_query.gino.all(
+                fqdn_hash=fqdn_hash,
+                per_page=pagination.per_page,
+                offset=pagination.offset,
+            )
         )
         return [
             RuegeModel(
                 identifier=ruege[0], title=ruege[1], year=ruege[2], ziffer=ruege[3]
             )
-            for ruege in await db.select(
-                [Ruege.identifier, Ruege.title, Ruege.year, Ruege.ziffer]
+            for ruege in await paginated_ruege_query.gino.all(
+                fqdn_hash=fqdn_hash,
+                per_page=pagination.per_page,
+                offset=pagination.offset,
             )
-            .where(Ruege.domain.startswith(fqdn_hash))
-            .limit(pagination.per_page)
-            .group_by(Ruege.domain)
-            .offset(pagination.offset)
-            .gino.all()
         ]
+
+
+# Pre-baked Queries
+# Baking queries not only helps with performance on repeated queries
+# but also will avoid high-level error since sqlalchemy will attempt to build them at least once
+count_parents_query = db.bake(
+    db.select([db.func.count()]).where(
+        Link.parent_id == db.bindparam("id") and Link.network == db.bindparam("network")
+    )
+)
+
+count_children_query = db.bake(
+    db.select([db.func.count()]).where(
+        Link.child_id == db.bindparam("id") and Link.network == db.bindparam("network")
+    )
+)
+
+count_ruegen_query = db.bake(
+    db.select([db.func.count()]).where(Ruege.domain_hash == db.bindparam("id"))
+)
+
+paginated_ruege_query = db.bake(
+    db.select([Ruege.identifier, Ruege.title, Ruege.year, Ruege.ziffer])
+    .where(Ruege.domain_hash.startswith(db.bindparam("fqdn_hash")))
+    .limit(db.bindparam("per_page"))
+    .offset(db.bindparam("offset"))
+    .order_by(db.bindparam("fqdn_hash"))
+)

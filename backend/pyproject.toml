@@ -1,8 +1,21 @@
 [tool.poetry]
-authors = ["Cobalt <https://cobalt.rocks>"]
+authors = ["Cobalt <c0balt@disroot.org>"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU Affero General Public License v3",
+    "Natural Language :: English",
+    "Operating System :: Unix",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Internet :: WWW/HTTP :: Indexing/Search",
+    "Typing :: Typed",
+]
 description = "the backend for the web of web trust protoype as part of jugendhackt 2021"
+keywords = ["web-of-trust", "jugendhackt", "prototype"]
 license = "AGPL-3-only"
 name = "web-of-web-trust-backend"
+readme = "README.md"
+repository = "https://github.com/Jugendhackt/web-of-web-trust-server"
 version = "0.1.1b0"
 
 [tool.poetry.dependencies]
@@ -13,6 +26,11 @@ psycopg2-binary = "^2.9.1"
 pydantic = "^1.8.2"
 python = "^3.9"
 typer = "^0.4.0"
+gino = { git = "https://github.com/python-gino/gino.git", tag = "v1.1.0b2", extras = [
+    "postgresql",
+    "starlette",
+] }
+blake3 = "^0.2.0"
 
 [tool.poetry.dev-dependencies]
 alembic = "^1.7.4"
@@ -24,6 +42,7 @@ pylint = "^2.11.1"
 rope = "^0.20.1"
 sqlalchemy-stubs = "^0.4"
 uvicorn = "^0.15.0"
+pytest = "^6.2.5"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"

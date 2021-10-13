@@ -60,7 +60,6 @@ func main() {
 
 	for {
 		go func() {
-			log.Println("WHILE\r")
 			for _, raw := range confjs.Netgood {
 				links := scrab.Scraper(raw)
 
