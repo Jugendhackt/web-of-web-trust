@@ -10,8 +10,10 @@ But when informing oneself, you might quickly find out that assessing informatio
 To help with tackling this problem, [we](https://github.com/orgs/Jugendhackt/teams/web-of-web-trust) have gone back to the roots of the first search engines and thought about an easy-to-use but informative way of giving the user insight in the reputability of a website.
 Similar to the first search engines, like yahoo, we assess websites based on the number of times there are linked by other websites and how many times they link to external websites. This method in itself is simple and doesn't really provide a good way of assessing sources, though.
 
-And that's where our special sauce comes into play. By having a seed set for both factual news and misinformative news sites, we can build two networks describing the above-mentioned method. We can use these networks to evaluate a score and present it to the user.
-We can then supplement the data with metadata about e.g. topicality and also, since we have the full index, sites that link to the current website. This allows the user to gain deeper insight in the trust between websites and allows us to build a web-of-web-trust that provides explainability and transparency for scores.
+And that's where our special sauce comes into play. By having a seed set for both factual news and misinformative news sites, we can build two networks describing the above-mentioned method. We can use these networks to evaluate a score and present it to the user. 
+
+We can then supplement the data with metadata about, e.g., topicality and also, since we have the full index, sites that link to the current website. This allows the user to gain deeper insight in the trust between websites and allows us to build a web-of-web-trust that provides explainability and transparency for scores.
+
 We also want, (WIP), to allow the user to set their own weights in the composition of the score to allow for a more personalized scoring.
 
 ## End-Product and Architecture
@@ -26,13 +28,11 @@ We plan to realize our idea in the form of a browser extension that allows the u
 
 ### Why is a special design even needed? 
 
-Since all clients, such as the browser extension, will be fetching a website that the user currently visits it would be easy for a malicious operator to track all users.
+Since all clients, such as the browser extension, will be fetching a website that the user currently visits, it would be easy for a malicious operator to track all users.
 
-To mitigate this thread clients *must* request domains, and ruegen, by the first chars of a [BLAKE3](https://github.com/BLAKE3-team/BLAKE3) [hexdigest](https://docs.python.org/3/library/hashlib.html#hashlib.hash.hexdigest) of the FQDN.
+To mitigate this thread, clients *must* request domains, and ruegen, by the first chars of a [BLAKE3](https://github.com/BLAKE3-team/BLAKE3) [hexdigest](https://docs.python.org/3/library/hashlib.html#hashlib.hash.hexdigest) of the FQDN.
 The API will then return all domains that start with the supplied characters in a paginated manner.
-By using this technique the server may not know the specifc request domain.
-
-> This will also over time make the reversing of hash -> FQDn harder, since domains in the database will grow.
+By using this technique, the server may not know the specific request domain.
 
 ## Structure
 
