@@ -1,11 +1,19 @@
 from api.db import db
-from api.db.schema import Domain, Link, count_ruegen_query
+from api.db.schema import (
+    count_ruegen_query,
+    Domain,
+    get_domain_id_query,
+    link_exists_query,
+    Link,
+    paginated_domain_dump_query,
+    paginated_domain_fetch_query,
+)
 from api.domains.models import (
     AggregatedDomainResponse,
     DomainDumpResponse,
+    DomainHash,
     DomainResponse,
     InsertRequest,
-    DomainHash,
 )
 from api.utility.dependencies import pagination, PaginationParameter
 from fastapi import Query, HTTPException, Response, APIRouter, Depends
@@ -26,7 +34,7 @@ domain_router = APIRouter(prefix="/domain", tags=["Domains"])
     status_code=200,
 )
 async def fetch_domains(
-    domains: str = DomainHash,
+    fqdn_hash: str = DomainHash,
     pagination: PaginationParameter = Depends(pagination),
 ):
     # Assemble List of domains
@@ -38,11 +46,11 @@ async def fetch_domains(
                 last_updated=domain[0],
                 ruegen_amount=await count_ruegen_query.scalar(id=domain[2]),
             )
-            for domain in await db.select([Domain.last_updated, Domain.fqdn, Domain.id])
-            .where(Domain.fqdn_hash.startswith(domains))
-            .limit(pagination.per_page)
-            .offset(pagination.offset)
-            .gino.all()
+            for domain in await paginated_domain_fetch_query.all(
+                offset=pagination.offset,
+                per_page=pagination.per_page,
+                fqdn_hash=fqdn_hash,
+            )
         ]
     }
 
@@ -56,9 +64,7 @@ async def fetch_domains(
 )
 async def insert_domain(domain: InsertRequest):
     data = jsonable_encoder(domain)
-    parent = (
-        await db.select([Domain.id]).where(Domain.fqdn == data["domain"]).gino.first()
-    )
+    parent = await get_domain_id_query.first(fqdn=data["domain"])
 
     if parent is None:
         parent = await Domain.create(
@@ -66,11 +72,12 @@ async def insert_domain(domain: InsertRequest):
             fqdn_hash=Domain.hash_name(data["domain"]),
             last_updated=floor(time()),
         )
+        parent_id = parent.id
+    else:
+        parent_id = parent[0]
 
     for link in domain.links:
-        link_entry = (
-            await db.select([Domain.id]).where(Domain.fqdn == link).gino.first()
-        )
+        link_entry = await get_domain_id_query.first(fqdn=link)
 
         if link_entry is None:
             link_entry = await Domain.create(
@@ -82,13 +89,9 @@ async def insert_domain(domain: InsertRequest):
         else:
             link_id = link_entry[0]
 
-        if not await db.scalar(
-            db.exists()
-            .where(Link.parent_id == parent.id and Link.child_id == link_id)
-            .select()
-        ):
+        if not await link_exists_query.scalar(parent=parent_id, child=link_id):
             await Link.create(
-                network=data["network"], parent_id=parent.id, child_id=link_id
+                network=data["network"], parent_id=parent_id, child_id=link_id
             )
 
     return Response(status_code=202)
@@ -104,9 +107,8 @@ async def db_dump(pagination: PaginationParameter = Depends(pagination)):
     return {
         "domains": [
             {"fqdn": domain[0], "hash": domain[1]}
-            for domain in await db.select([Domain.fqdn, Domain.fqdn_hash])
-            .limit(pagination.per_page)
-            .offset(pagination.offset)
-            .gino.all()
+            for domain in await paginated_domain_dump_query.all(
+                per_page=pagination.per_page, offset=pagination.offset
+            )
         ]
     }

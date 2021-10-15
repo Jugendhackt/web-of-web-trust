@@ -121,5 +121,31 @@ paginated_ruege_query = db.bake(
     .where(Ruege.domain_hash.startswith(db.bindparam("fqdn_hash")))
     .limit(db.bindparam("per_page"))
     .offset(db.bindparam("offset"))
-    .order_by(db.bindparam("fqdn_hash"))
+    .order_by(Ruege.domain_hash)
+)
+
+paginated_domain_dump_query = db.bake(
+    db.select([Domain.fqdn, Domain.fqdn_hash])
+    .limit(db.bindparam("per_page"))
+    .offset(db.bindparam("offset"))
+)
+
+paginated_domain_fetch_query = db.bake(
+    db.select([Domain.last_updated, Domain.fqdn, Domain.id])
+    .where(Domain.fqdn_hash.startswith(db.bindparam("fqdn_hash")))
+    .limit(db.bindparam("per_page"))
+    .offset(db.bindparam("offset"))
+)
+
+get_domain_id_query = db.bake(
+    db.select([Domain.id]).where(Domain.fqdn == db.bindparam("fqdn"))
+)
+
+link_exists_query = db.bake(
+    db.exists()
+    .where(
+        Link.parent_id == db.bindparam("parent")
+        and Link.child_id == db.bindparam("child")
+    )
+    .select()
 )
